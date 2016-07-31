@@ -38,7 +38,24 @@ class tube(Timeout, Logger):
             self.setLevel(level)
 
         self.buffer          = Buffer()
+        self._xml = ''
         atexit.register(self.close)
+
+    def cfexml(self):
+        return '''<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE pov SYSTEM "/usr/share/cgc-docs/cfe-pov.dtd">
+<cfepov>
+    <cbid>service</cbid>
+    <replay>
+        <negotiate>
+            <type2></type2>
+        </negotiate>
+%s
+        <submit>
+            <var></var>
+        </submit>
+    </replay>
+</cfepov>''' % self._xml
 
     # Functions based on functions from subclasses
     def recv(self, numb = 4096, timeout = default):
@@ -231,6 +248,9 @@ class tube(Timeout, Logger):
                 >>> t.recvn(10, timeout=0.06) # doctest: +ELLIPSIS
                 'aaaaaa...'
         """
+        # cgcxml
+        self._xml += '<read><length>%d</length></read>\n' % numb
+
         # Keep track of how much data has been received
         # It will be pasted together at the end if a
         # timeout does not occur, or put into the tube buffer.
@@ -290,6 +310,9 @@ class tube(Timeout, Logger):
                 'Hello'
 
         """
+        # cgcxml
+        self._xml += '<read><delim format="hex">%s</delim></read>\n' % delims.encode('hex')
+
         # Convert string into singleton tupple
         if isinstance(delims, (str, unicode)):
             delims = (delims,)
@@ -704,6 +727,8 @@ class tube(Timeout, Logger):
             >>> t.send('hello')
             'hello'
         """
+        # cgcxml 
+        self._xml += '<write><data format="hex">%s</data></write>\n' % data.encode('hex')
 
         if self.isEnabledFor(logging.DEBUG):
             self.debug('Sent %#x bytes:' % len(data))

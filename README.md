@@ -16,6 +16,12 @@ r.send(asm(shellcraft.sh()))
 r.interactive()
 ```
 
+# CFE-POV
+
+Add cfe-pov generator, only support `recvn(), recvuntil(), send()`.
+
+Use `r.cfexml()` to get cfe-xml.
+
 # Try It Now!
 
 You can now do a live demo of Binjitsu, [right in your browser](http://demo.binjit.su).  Alternately, you can SSH to the same host, and log in as user `zerocool` with [this private key][key] (password `i_promise_not_to_be_evil`).
